@@ -1,0 +1,7 @@
+(executables
+ (public_names test one)
+ (names main one)
+ (libraries advent str))
+(env
+  (dev
+    (flags (:standard -warn-error -32-26))))
