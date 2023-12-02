@@ -22,3 +22,9 @@ let print_pair p =
   print_string " ";
   print_int @@ snd p;
   print_newline ()
+
+let rec get ls index =
+  match index with
+  | 0 -> List.hd ls
+  | a when a > 0 -> get (List.tl ls) (a - 1)
+  | _ -> failwith "negative index"

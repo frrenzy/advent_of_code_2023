@@ -18,16 +18,16 @@ let first lines =
 
 let nums =
   [
-    ("one", 1);
-    ("two", 2);
-    ("three", 3);
-    ("four", 4);
-    ("five", 5);
-    ("six", 6);
-    ("seven", 7);
-    ("eight", 8);
-    ("nine", 9);
-    ("zero", 0);
+    ("one", "1e");
+    ("two", "2o");
+    ("three", "t3e");
+    ("four", "f4r");
+    ("five", "f5e");
+    ("six", "6x");
+    ("seven", "s7n");
+    ("eight", "e8t");
+    ("nine", "n9e");
+    ("zero", "z0o");
   ]
 
 let nums_regex =
@@ -36,9 +36,17 @@ let nums_regex =
 
 let subst s =
   let num_pair = List.find (fun p -> fst p = Str.matched_string s) nums in
-  string_of_int @@ snd num_pair
+  snd num_pair
 
-let replace = Str.global_substitute nums_regex subst
+let replace s =
+  let rec loop str =
+    let new_str = Str.substitute_first nums_regex subst str in
+    let len = String.length str in
+    match String.length new_str with
+    | l when l = len -> new_str
+    | _ -> loop new_str
+  in
+  loop s
 
 let second lines =
   let sum acc x = acc + x in
