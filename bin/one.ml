@@ -1,6 +1,6 @@
 let filter_digits s =
   let is_digit = function '0' .. '9' -> true | _ -> false in
-  List.filter is_digit @@ List.of_seq @@ String.to_seq s
+  s |> String.to_seq |> List.of_seq |> List.filter is_digit
 
 let get_digits_pair = function
   | [] -> (0, 0)

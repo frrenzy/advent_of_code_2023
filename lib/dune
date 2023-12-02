@@ -1,3 +1,4 @@
 (library
  (name advent)
- (modules file lists utils))
+ (modules file lists utils)
+ (libraries str))
