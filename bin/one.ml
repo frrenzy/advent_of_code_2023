@@ -49,11 +49,10 @@ let replace s =
   loop s
 
 let second lines =
-  let sum acc x = acc + x in
   let values =
     List.map get_number @@ List.map filter_digits @@ List.map replace lines
   in
-  List.fold_left sum 0 values
+  List.fold_left ( + ) 0 values
 
 let () =
   let lines = Advent.File.read_lines 1 in
