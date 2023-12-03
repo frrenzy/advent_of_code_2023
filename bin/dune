@@ -1,7 +1,7 @@
 (executables
- (public_names test one two three)
- (names main one two three)
- (libraries advent str))
+  (public_names gen one two three)
+  (names gen one two three)
+  (libraries advent str))
 (env
   (dev
     (flags (:standard -warn-error -32-26-34-69))))
