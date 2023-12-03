@@ -1,6 +1,6 @@
 (executables
- (public_names test one two)
- (names main one two)
+ (public_names test one two three)
+ (names main one two three)
  (libraries advent str))
 (env
   (dev
