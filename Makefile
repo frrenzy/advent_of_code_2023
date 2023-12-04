@@ -6,3 +6,6 @@
 
 3:
 	dune exec three
+
+4:
+	dune exec four
