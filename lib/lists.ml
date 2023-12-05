@@ -28,3 +28,16 @@ let rec get ls index =
   | 0 -> List.hd ls
   | a when a > 0 -> get (List.tl ls) (a - 1)
   | _ -> failwith "negative index"
+
+let range a b =
+  let rec aux acc a = function
+    | 0 -> acc
+    | b -> aux (a :: acc) (a + 1) (b - 1)
+  in
+  List.rev @@ aux [] a b
+
+let to_pairs l =
+  l
+  |> List.mapi (fun i e ->
+         match i mod 2 with 0 -> Some (e, List.nth l (i + 1)) | _ -> None)
+  |> List.filter Option.is_some |> List.map Option.get
