@@ -81,7 +81,7 @@ let write_makefile number =
   close_out chan
 
 let main number =
-  ignore @@ Sys.command @@ "./get_input.sh " ^ string_of_int number;
+  ignore @@ Sys.command @@ "get_advent 2023 " ^ string_of_int number;
   append_files number;
   write_new_files number;
   write_makefile number

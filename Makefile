@@ -12,3 +12,6 @@
 
 5:
 	dune exec five
+
+6:
+	dune exec six
