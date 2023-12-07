@@ -13,9 +13,10 @@ let map =
 
 let bin_name number = "./bin/" ^ NMap.find number map ^ ".ml"
 let module_name number = "./lib/" ^ NMap.find number map ^ ".ml"
+let test_name number = "./test/" ^ NMap.find number map ^ ".ml"
 let interface_name number = module_name number ^ "i"
 
-let write_new_files number =
+let write_code number =
   let bin_file_name = bin_name number in
   let bin_chan = open_out bin_file_name in
   let module_internal_name = String.capitalize_ascii @@ NMap.find number map in
@@ -40,50 +41,60 @@ let write_new_files number =
   Printf.fprintf module_chan
     "let first lines = List.length lines\n\
      let second lines = List.length lines\n";
-  close_out module_chan
+  close_out module_chan;
 
-let lib_dune = "./lib/dune"
-let bin_dune = "./bin/dune"
+  let test_file_name = test_name number in
+  let test_chan = open_out test_file_name in
+  let file_name = String.capitalize_ascii @@ NMap.find number map in
+  Printf.fprintf test_chan
+    "let () =\n\
+    \  let input = Advent.File.read_lines_test %d in\n\n\
+    \  let first = Advent.%s.first input in\n\
+    \  let second = Advent.%s.second input in\n\n\
+    \  Advent.Test.assert' first 6440 \"%d.1 test invalid\";\n\
+    \  Advent.Test.assert' second 5905 \"%d.2 test invalid\";\n\n\
+    \  let input = Advent.File.read_lines %d in\n\n\
+    \  let first = Advent.%s.first input in\n\
+    \  let second = Advent.%s.second input in\n\n\
+    \  Advent.Test.assert' first 251927063 \"%d.1 real invalid\";\n\
+    \  Advent.Test.assert' second 255632664 \"%d.2 real invalid\";\n\n\
+    \  print_endline \"%d good\"" number file_name file_name number number
+    number file_name file_name number number number;
+  close_out test_chan
 
 let transform_line line content =
   String.sub line 0 (String.length line - 1) ^ " " ^ content ^ ")"
 
-let append_files number =
-  let lib_content = Advent.File.read lib_dune in
-  let lib_chan = open_out lib_dune in
+let write_dune_file file_name number line_predicate =
+  let content = Advent.File.read file_name in
+  let chan = open_out file_name in
   let print line =
-    let prefix = "  (modules" in
-    match String.starts_with ~prefix line with
+    match line_predicate line with
     | true ->
-        Printf.fprintf lib_chan "%s\n"
-        @@ transform_line line @@ NMap.find number map
-    | false -> Printf.fprintf lib_chan "%s\n" line
+        Printf.fprintf chan "%s\n" @@ transform_line line
+        @@ NMap.find number map
+    | false -> Printf.fprintf chan "%s\n" line
   in
-  List.iter print lib_content;
+  List.iter print content
 
-  let bin_content = Advent.File.read bin_dune in
-  let bin_chan = open_out bin_dune in
-  let print line =
-    match
-      String.starts_with ~prefix:"  (names" line
-      || String.starts_with ~prefix:"  (public_names" line
-    with
-    | true ->
-        Printf.fprintf bin_chan "%s\n"
-        @@ transform_line line @@ NMap.find number map
-    | false -> Printf.fprintf bin_chan "%s\n" line
-  in
-  List.iter print bin_content
+let write_dune number =
+  write_dune_file "./lib/dune" number @@ String.starts_with ~prefix:"  (modules";
+  write_dune_file "./test/dune" number @@ String.starts_with ~prefix:"  (names";
+  write_dune_file "./bin/dune" number (fun l ->
+      String.starts_with ~prefix:"  (names" l
+      || String.starts_with ~prefix:"  (public_names" l)
 
 let write_makefile number =
   let chan = open_out_gen [ Open_append; Open_creat ] 0o666 "Makefile" in
-  Printf.fprintf chan "\n%d:\n\tdune exec %s\n" number @@ NMap.find number map;
+  let file_name = NMap.find number map in
+  Printf.fprintf chan "\n%d:\n\tdune exec %s\n" number file_name;
+  Printf.fprintf chan "\ntest_%d:\n\tdune exec test/%s.exe\n" number file_name;
   close_out chan
 
 let main number =
   ignore @@ Sys.command @@ "get_advent 2023 " ^ string_of_int number;
-  append_files number;
-  write_new_files number;
+  write_dune number;
+  write_code number;
   write_makefile number
 
 let () =

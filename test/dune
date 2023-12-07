@@ -1,6 +1,6 @@
-(test
- (name advent_test)
- (libraries advent))
+(tests
+  (names one two three four five six seven)
+  (libraries advent))
 (env
   (dev
     (flags (:standard -warn-error -32-26-34-69-27))))

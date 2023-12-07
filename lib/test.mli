@@ -1,1 +1,1 @@
-val assert' : bool -> string -> unit
+val assert' : int -> int -> string -> unit
