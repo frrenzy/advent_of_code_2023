@@ -15,3 +15,6 @@
 
 6:
 	dune exec six
+
+7:
+	dune exec seven
