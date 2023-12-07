@@ -8,21 +8,16 @@ module Cards = Set.Make (Int)
 
 let get_win_number line =
   let parts = Utils.split " | " line in
-  let winning_str = List.hd parts in
   let got_str = List.hd @@ List.tl parts in
-  let filter_str s = String.length s > 0 in
-  let winning_t =
-    Utils.split " " winning_str
-    |> List.map String.trim |> List.filter filter_str
+  let not_empty s = String.length s > 0 in
+  let winning =
+    List.hd parts |> Utils.split " " |> List.map String.trim
+    |> List.filter not_empty |> List.map int_of_string
   in
-  let winning = List.map int_of_string winning_t in
   let set = Cards.of_list winning in
   let filter number = Cards.mem (int_of_string number) set in
-  let got =
-    Utils.split " " got_str |> List.map String.trim |> List.filter filter_str
-    |> List.filter filter
-  in
-  List.length got
+  Utils.split " " got_str |> List.map String.trim |> List.filter not_empty
+  |> List.filter filter |> List.length
 
 let get_line_score line = points @@ get_win_number line
 

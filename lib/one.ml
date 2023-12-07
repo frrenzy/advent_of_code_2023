@@ -12,8 +12,7 @@ let get_number p =
   (10 * x) + y
 
 let first lines =
-  let sum acc x = acc + x in
-  List.fold_left sum 0 @@ List.map get_number @@ List.map filter_digits lines
+  List.map filter_digits lines |> List.map get_number |> List.fold_left ( + ) 0
 
 let nums =
   [
@@ -29,13 +28,8 @@ let nums =
     ("zero", "z0o");
   ]
 
-let nums_regex =
-  let all_numbers = String.concat "\\|" @@ List.map fst nums in
-  Str.regexp all_numbers
-
-let subst s =
-  let num_pair = List.find (fun p -> fst p = Str.matched_string s) nums in
-  snd num_pair
+let nums_regex = String.concat "\\|" @@ List.map fst nums |> Str.regexp
+let subst s = List.find (fun p -> fst p = Str.matched_string s) nums |> snd
 
 let replace s =
   let rec loop str =
@@ -47,8 +41,4 @@ let replace s =
   in
   loop s
 
-let second lines =
-  let values =
-    List.map get_number @@ List.map filter_digits @@ List.map replace lines
-  in
-  List.fold_left ( + ) 0 values
+let second lines = List.map replace lines |> first
