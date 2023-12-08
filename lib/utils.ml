@@ -7,3 +7,9 @@ let file_name number is_test =
 let split pattern str =
   let re = Str.regexp_string pattern in
   Str.split re str
+
+let rec gcd a = function 0 -> a | b -> gcd b (a mod b)
+
+let lcm a b =
+  let d = gcd a b in
+  a * (b / d)
