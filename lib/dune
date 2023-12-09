@@ -1,6 +1,6 @@
 (library
   (name advent)
-  (modules file lists utils test one two three four five six seven eight)
+  (modules file lists utils test one two three four five six seven eight nine)
   (libraries str))
 (env
   (dev

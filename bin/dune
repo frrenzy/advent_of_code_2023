@@ -1,6 +1,6 @@
 (executables
-  (public_names gen one two three four five six seven eight)
-  (names gen one two three four five six seven eight)
+  (public_names gen one two three four five six seven eight nine)
+  (names gen one two three four five six seven eight nine)
   (libraries advent str))
 (env
   (dev

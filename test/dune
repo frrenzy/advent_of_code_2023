@@ -1,5 +1,5 @@
 (tests
-  (names one two three four five six seven eight)
+  (names one two three four five six seven eight nine)
   (libraries advent))
 (env
   (dev

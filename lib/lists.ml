@@ -41,3 +41,7 @@ let to_pairs l =
   |> List.mapi (fun i e ->
          match i mod 2 with 0 -> Some (e, List.nth l (i + 1)) | _ -> None)
   |> List.filter Option.is_some |> List.map Option.get
+
+let sum = List.fold_left ( + ) 0
+let product = List.fold_left ( * ) 0
+let print l sep = List.map string_of_int l |> String.concat sep |> print_endline

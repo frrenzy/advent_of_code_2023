@@ -5,3 +5,6 @@ val print_pair : int * int -> unit
 val get : 'a list -> int -> 'a
 val range : int -> int -> int list
 val to_pairs : 'a list -> ('a * 'a) list
+val sum : int list -> int
+val product : int list -> int
+val print : int list -> string -> unit
