@@ -51,3 +51,9 @@ test_8:
 
 test_9:
 	dune exec test/nine.exe
+
+10:
+	dune exec ten
+
+test_10:
+	dune exec test/ten.exe
