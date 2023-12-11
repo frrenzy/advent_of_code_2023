@@ -45,3 +45,31 @@ let to_pairs l =
 let sum = List.fold_left ( + ) 0
 let product = List.fold_left ( * ) 0
 let print l sep = List.map string_of_int l |> String.concat sep |> print_endline
+
+let rec slice_from l pos =
+  match (l, pos) with
+  | l, 0 -> l
+  | _ :: xs, a -> slice_from xs (a - 1)
+  | [], _ -> raise @@ Invalid_argument "index too high"
+
+let slice_to l pos =
+  let rec aux l' pos' acc =
+    match (l', pos') with
+    | _, 0 -> acc
+    | x :: xs, a -> aux xs (a - 1) (x :: acc)
+    | [], _ ->
+        raise
+        @@ Invalid_argument
+             ("index too high: " ^ string_of_int pos ^ ", where len "
+            ^ string_of_int @@ List.length l)
+  in
+  List.rev @@ aux l pos []
+
+let slice l from len =
+  let from_slice = slice_from l from in
+  slice_to from_slice len
+
+let insert l pos el =
+  let left = slice_to l pos in
+  let right = slice_from l pos in
+  left @ (el :: right)

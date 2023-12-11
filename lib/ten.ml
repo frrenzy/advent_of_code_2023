@@ -17,15 +17,15 @@ class node symbol =
       | 'S' -> Start
       | _ -> Any_pipe
 
-    method symbol =
-      match symbol with
-      | '|' -> "|"
-      | '-' -> "─"
-      | 'F' -> "╭"
-      | '7' -> "╮"
-      | 'J' -> "╯"
-      | 'L' -> "╰"
-      | _ -> "*"
+    method symbol = symbol
+    (* match symbol with *)
+    (* | '|' -> "|" *)
+    (* | '-' -> "─" *)
+    (* | 'F' -> "╭" *)
+    (* | '7' -> "╮" *)
+    (* | 'J' -> "╯" *)
+    (* | 'L' -> "╰" *)
+    (* | _ -> "*" *)
 
     method next_dir (from : dir) =
       match (from, self#t) with
@@ -62,13 +62,31 @@ let get_cycle (grid : node list list) =
 
 let first lines =
   let cycle = lines |> List.map nodes_of_line |> get_cycle in
-  let map = Array.init 140 (fun _ -> Array.init 140 (fun _ -> "*")) in
-  List.iter (fun (a, b, symbol) -> map.(a).(b) <- symbol) cycle;
-  map.(52).(100) <- "S";
-  Array.iter
-    (fun l ->
-      print_endline @@ String.concat "" @@ List.of_seq @@ Array.to_seq l)
-    map;
   List.length cycle / 2
 
-let second lines = List.length lines
+let second lines =
+  let nodes = List.map nodes_of_line lines in
+  let cycle = get_cycle nodes in
+  let map = Array.init 140 (fun _ -> Array.init 140 (fun _ -> '*')) in
+  List.iter (fun (a, b, _) -> map.(a).(b) <- 'P') cycle;
+
+  (* shoelace theorem + pick's theorem *)
+  (* twice the resolution && flood algorithm *)
+  let count = ref 0 in
+  let inside = ref false in
+  Array.iteri
+    (fun a l ->
+      inside := false;
+      Array.iteri
+        (fun b char ->
+          match char with
+          | '*' -> if !inside then incr count
+          | 'P' -> (
+              let node = List.nth (List.nth nodes a) b in
+              match node#symbol with
+              | '-' -> ()
+              | _ -> ignore (inside := not !inside))
+          | _ -> failwith "aboba")
+        l)
+    map;
+  !count
