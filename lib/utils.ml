@@ -13,3 +13,6 @@ let rec gcd a = function 0 -> a | b -> gcd b (a mod b)
 let lcm a b =
   let d = gcd a b in
   a * (b / d)
+
+let half a = a / 2
+let double = ( * ) 2

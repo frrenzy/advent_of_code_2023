@@ -4,8 +4,8 @@ type pipe = Pipe of dir * dir | Ground | Start | Any_pipe
 exception Invalid_direction
 
 class node symbol =
-  object (self)
-    method t =
+  object
+    val t =
       match symbol with
       | '|' -> Pipe (Top, Bottom)
       | '-' -> Pipe (Left, Right)
@@ -17,18 +17,12 @@ class node symbol =
       | 'S' -> Start
       | _ -> Any_pipe
 
+    val v = match symbol with 'L' | 'J' | '7' | 'S' | 'F' -> true | _ -> false
+    method is_vertex = v
     method symbol = symbol
-    (* match symbol with *)
-    (* | '|' -> "|" *)
-    (* | '-' -> "─" *)
-    (* | 'F' -> "╭" *)
-    (* | '7' -> "╮" *)
-    (* | 'J' -> "╯" *)
-    (* | 'L' -> "╰" *)
-    (* | _ -> "*" *)
 
     method next_dir (from : dir) =
-      match (from, self#t) with
+      match (from, t) with
       | _, Ground | _, Any_pipe -> Invalid_dir
       | _, Start -> Any_dir
       | from, Pipe (a, b) -> (
@@ -38,8 +32,15 @@ class node symbol =
           | _ -> Invalid_dir)
   end
 
+let starting grid =
+  let grid = List.map (List.map (fun n -> n#symbol)) grid in
+  let a = List.find_index (List.mem 'S') grid |> Option.get in
+  let b = List.find_index (( = ) 'S') (List.nth grid a) |> Option.get in
+  [ (a - 1, b, Bottom); (a + 1, b, Top); (a, b - 1, Right); (a, b + 1, Left) ]
+
 let nodes_of_line l = String.to_seq l |> List.of_seq |> List.map (new node)
 let get (a, b) grid = List.nth (List.nth grid a) b
+let half a = a / 2
 
 let get_cycle (grid : node list list) =
   let rec aux (a, b) from pos acc =
@@ -47,46 +48,30 @@ let get_cycle (grid : node list list) =
       try get (a, b) grid with Failure _ -> raise Invalid_direction
     in
     match node#next_dir from with
-    | Top -> aux (a - 1, b) Bottom (pos + 1) ((a, b, node#symbol) :: acc)
-    | Bottom -> aux (a + 1, b) Top (pos + 1) ((a, b, node#symbol) :: acc)
-    | Right -> aux (a, b + 1) Left (pos + 1) ((a, b, node#symbol) :: acc)
-    | Left -> aux (a, b - 1) Right (pos + 1) ((a, b, node#symbol) :: acc)
-    | Any_dir -> (a, b, node#symbol) :: acc
+    | Top -> aux (a - 1, b) Bottom (pos + 1) ((a, b, node#is_vertex) :: acc)
+    | Bottom -> aux (a + 1, b) Top (pos + 1) ((a, b, node#is_vertex) :: acc)
+    | Right -> aux (a, b + 1) Left (pos + 1) ((a, b, node#is_vertex) :: acc)
+    | Left -> aux (a, b - 1) Right (pos + 1) ((a, b, node#is_vertex) :: acc)
+    | Any_dir -> (a, b, node#is_vertex) :: acc
     | _ -> raise @@ Invalid_direction
   in
   List.filter_map
     (fun (a, b, from) ->
       try Some (aux (a, b) from 2 []) with Invalid_direction -> None)
-    [ (51, 100, Bottom); (53, 100, Top); (52, 99, Right); (52, 101, Left) ]
+    (starting grid)
   |> List.hd
 
-let first lines =
-  let cycle = lines |> List.map nodes_of_line |> get_cycle in
-  List.length cycle / 2
+let shoelace cycle =
+  let vertices = List.filter (fun (_, _, is_vertex) -> is_vertex) cycle in
+  let len = List.length vertices in
+  List.mapi
+    (fun i (a1, b1, _) ->
+      let a2, b2, _ = List.nth vertices ((i + 1) mod len) in
+      (a1 * b2) - (a2 * b1))
+    vertices
+  |> Lists.sum |> abs |> half
 
-let second lines =
-  let nodes = List.map nodes_of_line lines in
-  let cycle = get_cycle nodes in
-  let map = Array.init 140 (fun _ -> Array.init 140 (fun _ -> '*')) in
-  List.iter (fun (a, b, _) -> map.(a).(b) <- 'P') cycle;
-
-  (* shoelace theorem + pick's theorem *)
-  (* twice the resolution && flood algorithm *)
-  let count = ref 0 in
-  let inside = ref false in
-  Array.iteri
-    (fun a l ->
-      inside := false;
-      Array.iteri
-        (fun b char ->
-          match char with
-          | '*' -> if !inside then incr count
-          | 'P' -> (
-              let node = List.nth (List.nth nodes a) b in
-              match node#symbol with
-              | '-' -> ()
-              | _ -> ignore (inside := not !inside))
-          | _ -> failwith "aboba")
-        l)
-    map;
-  !count
+let pick cycle = 1 - (List.length cycle / 2) + shoelace cycle
+let process lines f = List.map nodes_of_line lines |> get_cycle |> f
+let first lines = process lines (fun l -> List.length l / 2)
+let second lines = process lines pick
