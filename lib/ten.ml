@@ -72,6 +72,6 @@ let shoelace cycle =
   |> Lists.sum |> abs |> half
 
 let pick cycle = 1 - (List.length cycle / 2) + shoelace cycle
-let process lines f = List.map nodes_of_line lines |> get_cycle |> f
-let first lines = process lines (fun l -> List.length l / 2)
-let second lines = process lines pick
+let process f lines = List.map nodes_of_line lines |> get_cycle |> f
+let first = process (fun l -> List.length l / 2)
+let second = process pick

@@ -61,11 +61,11 @@ let compare power_func card_type first second =
   | 0 -> compare_strings first.cards second.cards card_type
   | a -> a
 
-let process lines power types =
+let process power types lines =
   lines |> List.map hand_of_line
   |> List.sort (compare power types)
   |> List.mapi (fun i h -> (i + 1) * h.bid)
   |> List.fold_left ( + ) 0
 
-let first lines = process lines full_power card_types
-let second lines = process lines power card_types_joker
+let first = process full_power card_types
+let second = process power card_types_joker

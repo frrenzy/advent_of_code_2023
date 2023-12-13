@@ -15,10 +15,10 @@ let fold numbers =
   in
   List.rev @@ aux numbers []
 
-let process lines rev =
+let process rev lines =
   let numbers = List.map tokens_of_line lines in
   let values = if rev = true then List.map List.rev numbers else numbers in
   List.map fold values |> List.map Lists.sum |> Lists.sum
 
-let first lines = process lines false
-let second lines = process lines true
+let first = process false
+let second = process true

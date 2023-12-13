@@ -37,11 +37,11 @@ let count ps heights widths =
   let double = List.map count_line ps |> List.flatten |> Lists.sum in
   double / 2
 
-let process lines multiplier =
+let process multiplier lines =
   let chars = lines |> List.map String.to_seq |> List.map List.of_seq in
   let heights = height chars multiplier in
   let widths = width chars multiplier in
   count (to_points chars) heights widths
 
-let first lines = process lines 2
-let second lines = process lines 1000000
+let first = process 2
+let second = process 1000000
