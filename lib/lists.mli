@@ -12,3 +12,4 @@ val slice_from : 'a list -> int -> 'a list
 val slice_to : 'a list -> int -> 'a list
 val slice : 'a list -> int -> int -> 'a list
 val insert : 'a list -> int -> 'a -> 'a list
+val transpose : 'a list list -> 'a list list

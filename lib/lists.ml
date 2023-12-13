@@ -73,3 +73,8 @@ let insert l pos el =
   let left = slice_to l pos in
   let right = slice_from l pos in
   left @ (el :: right)
+
+let transpose m =
+  List.init
+    (List.length @@ List.hd m)
+    (fun i -> List.map (fun l -> List.nth l i) m)
