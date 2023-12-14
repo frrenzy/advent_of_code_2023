@@ -1,0 +1,2 @@
+dune exec test/fourteen.exe
+14 good
