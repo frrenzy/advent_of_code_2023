@@ -75,3 +75,9 @@ test_13:
 
 test_14:
 	dune exec test/fourteen.exe
+
+15:
+	dune exec fifteen
+
+test_15:
+	dune exec test/fifteen.exe
