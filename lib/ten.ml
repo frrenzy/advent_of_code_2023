@@ -40,7 +40,6 @@ let starting grid =
 
 let nodes_of_line l = String.to_seq l |> List.of_seq |> List.map (new node)
 let get (a, b) grid = List.nth (List.nth grid a) b
-let half a = a / 2
 
 let get_cycle (grid : node list list) =
   let rec aux (a, b) from pos acc =
@@ -62,14 +61,10 @@ let get_cycle (grid : node list list) =
   |> List.hd
 
 let shoelace cycle =
-  let vertices = List.filter (fun (_, _, is_vertex) -> is_vertex) cycle in
-  let len = List.length vertices in
-  List.mapi
-    (fun i (a1, b1, _) ->
-      let a2, b2, _ = List.nth vertices ((i + 1) mod len) in
-      (a1 * b2) - (a2 * b1))
-    vertices
-  |> Lists.sum |> abs |> half
+  List.filter_map
+    (fun (a, b, is_vertex) -> if is_vertex then Some (a, b) else None)
+    cycle
+  |> Utils.shoelace
 
 let pick cycle = 1 - (List.length cycle / 2) + shoelace cycle
 let process f lines = List.map nodes_of_line lines |> get_cycle |> f

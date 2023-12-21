@@ -1,7 +1,7 @@
 (library
   (name advent)
-  (modules file lists utils test one two three four five six seven eight nine ten eleven thirteen fourteen fifteen sixteen)
+  (modules file lists utils test one two three four five six seven eight nine ten eleven thirteen fourteen fifteen sixteen eighteen nineteen)
   (libraries str))
 (env
   (dev
-    (flags (:standard -warn-error -8-32-26-34-69-27))))
+    (flags (:standard -warn-error -8-32-26-34-69-27-37))))
